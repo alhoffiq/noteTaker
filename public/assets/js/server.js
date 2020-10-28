@@ -1,15 +1,12 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+const db = require("../../../db/db.json");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-let json = "";
-fs.readFile(path.join(__dirname, "../../../db/db.json"), "utf8", (err, data) => {
-    if (err) throw err;
-    json = data;
-});
+app.use(express.static(path.join(__dirname, '../../../public')));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -24,13 +21,16 @@ app.get("/notes", function (req, res) {
 });
 
 app.get("/api/notes", function (req, res) {
-    return res.json(json);
+    return res.json(db);
 });
 
-app.post("/api/tables", function (req, res) {
+app.post("/api/notes", function (req, res) {
     let newNote = req.body;
-    console.log(newNote);
-    json.push(newNote);
+    db.push(newNote);
+    fs.writeFile('../../../db/db.json', JSON.stringify(db), (err) => {
+        if (err) throw err;
+        console.log('Data appended!');
+      });
     res.json(newNote);
 });
 
