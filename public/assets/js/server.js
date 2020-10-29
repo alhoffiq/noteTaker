@@ -26,14 +26,29 @@ app.get("/api/notes", function (req, res) {
 
 app.post("/api/notes", function (req, res) {
     let newNote = req.body;
-    db.push(newNote);
+    newNote.id = db.length; // adds the new note's id property to be equal to the index position it will be in
+    db.push(newNote); // puts the new note to the end of the database array
     fs.writeFile('../../../db/db.json', JSON.stringify(db), (err) => {
         if (err) throw err;
         console.log('Data appended!');
-      });
+    });
     res.json(newNote);
 });
 
+
+app.delete("/api/notes/:id", function (req, res) {
+    db.splice(req.params.id, 1);
+    for (let i = 0; i < db.length; i++) { // Makes sure the id property of all notes is equal to their index at all times
+        const note = db[i];
+        note.id = i;
+    };
+    fs.writeFile('../../../db/db.json', JSON.stringify(db), (err) => {
+        if (err) throw err;
+        console.log(`Note with id:${req.params.id} was removed`)
+    });
+    res.json(db);
+
+});
 app.listen(PORT, function () {
-    console.log("App listening on PORT, http://localhost:" + PORT);
+    console.log("App listening on PORT");
 });

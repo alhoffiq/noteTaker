@@ -36,7 +36,7 @@ const deleteNote = (id) => {
 const renderActiveNote = () => {
   $saveNoteBtn.hide();
 
-  if (activeNote.id) {
+  if (!isNaN(activeNote.id)) { // Modified with the !isNaN so the first note will work since my first note has id 0
     $noteTitle.attr("readonly", true);
     $noteText.attr("readonly", true);
     $noteTitle.val(activeNote.title);
